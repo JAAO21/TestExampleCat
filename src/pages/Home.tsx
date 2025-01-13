@@ -1,17 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { API_CATS, API_CATS_KEYWORD } from "../urls";
-import { useRef } from "react";
+
 export const Home = () => {
   const [apiCats, setApiCats] = useState<string | null>(null);
-  const [apiCatsKeyword, setApiCatskeyword] = useState<string | null>(null);
   const [keyword, setKeyword] = useState<string | null>(null);
-  const count = useRef(0);
-  const inputRef = useRef<HTMLInputElement | null>(null);
-  const focusInput = () => {
-    if (inputRef.current) {
-      inputRef.current.focus(); // Enfoca el input directamente
-    }
-  };
+  const [apiCatsKeyword, setApiCatskeyword] = useState<string | null>(null);
+  const [page, setPage] = useState<number>(1);
+  const observerRef = useRef<HTMLImageElement | null>(null);
   useEffect(() => {
     const callApi = async () => {
       try {
@@ -55,12 +50,19 @@ export const Home = () => {
       }
     };
     dataKeywordCat();
-  }, [keyword]);
+  }, [keyword, page]);
 
-  const increment = () => {
-    count.current += 1;
-    console.log("Valor actual:", count.current); // Muestra el valor actualizado sin renderizar
-  };
+  useEffect(() => {
+    const createObserver = () => {
+      if (!observerRef.current) return;
+      const handleIntersect: IntersectionObserverCallback = (entries) => {
+        if (entries[0].isIntersecting) {
+          setPage((prevPage) => prevPage + 1);
+        }
+      };
+    };
+    createObserver();
+  }, []);
   return (
     <div>
       <h1>Aplicación cats</h1>
@@ -73,11 +75,6 @@ export const Home = () => {
       ) : (
         <span>Cargando imagen ...</span>
       )}
-      <button onClick={increment}>Incrementar</button>
-      <div>
-        <input ref={inputRef} type="text" placeholder="Escribe algo" />
-        <button onClick={focusInput}>Enfocar</button>
-      </div>
     </div>
   );
 };
