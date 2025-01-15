@@ -5,8 +5,9 @@ export const Home = () => {
   const [apiCats, setApiCats] = useState<string | null>(null);
   const [keyword, setKeyword] = useState<string | null>(null);
   const [apiCatsKeyword, setApiCatskeyword] = useState<string | null>(null);
+  /* const [data, setData] = useState<number[]>([]); */
   const [page, setPage] = useState<number>(1);
-  const observerRef = useRef<HTMLImageElement | null>(null);
+  const observerRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     const callApi = async () => {
       try {
@@ -51,18 +52,36 @@ export const Home = () => {
     };
     dataKeywordCat();
   }, [keyword, page]);
-
+  /* 
   useEffect(() => {
-    const createObserver = () => {
-      if (!observerRef.current) return;
-      const handleIntersect: IntersectionObserverCallback = (entries) => {
-        if (entries[0].isIntersecting) {
-          setPage((prevPage) => prevPage + 1);
-        }
-      };
+    const fetchMockData = () => {
+      const newItems = Array.from(
+        { length: 10 },
+        (_, index) => (page - 1) * 10 + index + 1
+      ); // Generar 10 números por página
+      setData((prevData) => [...prevData, ...newItems]);
     };
-    createObserver();
-  }, []);
+
+    fetchMockData();
+  }, [page]); */
+  useEffect(() => {
+    if (!observerRef.current) return;
+    const handleIntersect: IntersectionObserverCallback = (entries) => {
+      if (entries[0].isIntersecting) {
+        setPage((prevPage) => prevPage + 1);
+      }
+    };
+    const options: IntersectionObserverInit = {
+      root: null,
+      rootMargin: "0px",
+      threshold: 1.0,
+    };
+    const observer = new IntersectionObserver(handleIntersect, options);
+    observer.observe(observerRef.current);
+    return () => {
+      if (observerRef.current) observer.unobserve(observerRef.current);
+    };
+  }, [observerRef]);
   return (
     <div>
       <h1>Aplicación cats</h1>
@@ -75,6 +94,27 @@ export const Home = () => {
       ) : (
         <span>Cargando imagen ...</span>
       )}
+      {/*   <div>
+        {data.map((item, index) => (
+          <div
+            key={index}
+            style={{
+              border: "1px solid black",
+              padding: "10px",
+              margin: "5px 0",
+            }}
+          >
+            Item {item}
+          </div>
+        ))}
+      </div>
+      <div
+        style={{ height: "700px", width: "700px", background: "pink" }}
+      ></div>
+      <div
+        ref={observerRef}
+        style={{ height: "20px", background: "red" }}
+      ></div> */}
     </div>
   );
 };
