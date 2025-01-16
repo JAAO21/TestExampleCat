@@ -82,6 +82,18 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+.containerImg {
+  display: flex;
+  padding: 5px;
+  justify-content: center;
+  margin: 5px;
+}
+.catsImg {
+  width: 400px;
+  height: 600px;
+  border-radius: 0.5vw;
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
